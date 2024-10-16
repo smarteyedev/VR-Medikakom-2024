@@ -26,7 +26,7 @@ namespace Seville
             base.OnSelectEntered(interactable);
 
             interactable.transform.SetParent(parentArea);
-            //ToggleMesh(false);
+            ToggleMesh(false);
 
             var obj = interactable.GetComponent<XRGrabInteractableTwoAttach>();
             obj.retainTransformParent = false;
