@@ -3,13 +3,28 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - GameController
+  - Player
+  - MainCamera
+  - EditorOnly
+  - Finish
+  - Respawn
+  - Untagged
+  - Left Hand
+  - Right Hand
+  - VideoPlayerCanvas
+  - Pisau
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
   - 
   - Water
+  - UI
+  - Intractable
+  - NonInteractable
+  - Player
   - UI
   - 
   - 
@@ -30,12 +45,8 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Direct Interaction
+  - Ray Interaction
   - 
   m_SortingLayers:
   - name: Default

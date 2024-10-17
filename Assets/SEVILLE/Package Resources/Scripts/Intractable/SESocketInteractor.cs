@@ -37,7 +37,7 @@ namespace Seville
         {
             base.OnSelectExited(interactable);
 
-            ToggleMesh(true);
+            //ToggleMesh(true);
             var obj = interactable.GetComponent<XRGrabInteractableTwoAttach>();
             obj.retainTransformParent = true;
         }
@@ -47,7 +47,7 @@ namespace Seville
         {
             base.OnHoverEntered(interactable);
 
-            ToggleMesh(false);
+            ToggleMesh(true);
         }
 
         [System.Obsolete]
@@ -55,7 +55,7 @@ namespace Seville
         {
             base.OnHoverEntered(interactable);
 
-            ToggleMesh(true);
+            ToggleMesh(false);
         }
 
         [System.Obsolete]
