@@ -22,6 +22,8 @@ public class SocketCheckerWithSFX : MonoBehaviour
     // Object to enable XR Grab Interactable when all sockets are filled
     public GameObject objectToEnableGrab; // Add this line
 
+    public GameObject WarningOpen; // Panel Warning
+
     // Flag to ensure SFX is played only once
     private bool sfxPlayed = false;
 
@@ -84,6 +86,7 @@ public class SocketCheckerWithSFX : MonoBehaviour
             if (grabInteractable != null)
             {
                 grabInteractable.enabled = true;
+                WarningOpen.SetActive(false);
             }
             else
             {
