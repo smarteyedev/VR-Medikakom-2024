@@ -3,7 +3,42 @@ guid: 881f99debdbdf614bb0a86a08e5e2c19
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Dark Steel
+    second: {fileID: 2100000, guid: d1aacc5e0af779a4ea34b462f7a86bae, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Oak Wood Floor
+    second: {fileID: 2100000, guid: 52e7ca0d29d43134ab2ff6e65b306231, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Steel Grey_old_Base Color
+    second: {fileID: 2800000, guid: db8accc2b6fc1774dba7f58da384f021, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Steel Grey_old_Metallic
+    second: {fileID: 2800000, guid: 9c212dc740ee71a46bdb0bd40e45517a, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Steel Grey_old_Roughness
+    second: {fileID: 2800000, guid: 4078f6973c422a348bab8e4a507824d6, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: wood-27_diffuse
+    second: {fileID: 2800000, guid: 3d125626621141d4c835af8b753d5a3d, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: wood-27_smooth
+    second: {fileID: 2800000, guid: 3c7d742418046734aa110d0601deeb5b, type: 3}
   materials:
     materialImportMode: 2
     materialName: 0

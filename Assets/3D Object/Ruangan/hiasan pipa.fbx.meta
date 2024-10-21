@@ -3,7 +3,17 @@ guid: d5fbd494235e59e48aa9aa2ffb24def2
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Metal.004
+    second: {fileID: 2100000, guid: 80632ff3bb07cc346adf9b5b7e6bd918, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: green_metal_rust_nor_gl_2k
+    second: {fileID: 2800000, guid: bc06d16beec65f747a744b65ec448b49, type: 3}
   materials:
     materialImportMode: 2
     materialName: 0

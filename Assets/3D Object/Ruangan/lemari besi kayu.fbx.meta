@@ -3,7 +3,27 @@ guid: 42b72cde5a35efb4e8684d13a72c7df5
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: weathered_planks.001
+    second: {fileID: 2100000, guid: 30c4c801c428621408ee943b90283efd, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: weathered_planks_diff_8k
+    second: {fileID: 2800000, guid: 880e04fe7efff4344948b2f74a7989db, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: weathered_planks_nor_gl_8k
+    second: {fileID: 2800000, guid: 7a36969db48024841b5c8844651b566b, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: weathered_planks_rough_8k
+    second: {fileID: 2800000, guid: 8eb323f79318ff34299040db79007cbf, type: 3}
   materials:
     materialImportMode: 2
     materialName: 0
