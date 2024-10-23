@@ -8,6 +8,7 @@ public class FadeOutEffect : MonoBehaviour
     public Button fadeOutButton; // Referensi ke tombol
     public GameObject[] objectsToTurnOff; // Array untuk objek yang harus dinonaktifkan
     public GameObject AirFlowStage;
+    public GameObject Perintah9;
     public new ParticleSystem particleSystem; // Referensi ke Particle System
 
     public float fadeDuration = 1.0f; // Durasi fade out
@@ -49,6 +50,7 @@ public class FadeOutEffect : MonoBehaviour
 
         // Menyalakan objek AirFlowStage sebelum Fade In
         AirFlowStage.SetActive(true);
+        Perintah9.SetActive(true);
 
         // Fade In
         yield return FadeTo(0); // Fade kembali ke alpha 0 (transparan)

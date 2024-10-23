@@ -7,6 +7,11 @@ public class SocketChecker : MonoBehaviour
 {
     public XRSocketInteractor[] sockets; // Array berisi semua socket yang akan dicek
     public new ParticleSystem particleSystem; // Referensi ke Particle System
+    public GameObject Perintah9;
+    public GameObject Perintah10;
+    public GameObject WarningHeatPanel;
+    public GameObject DoneHeatPanel;
+
 
     private void Start()
     {
@@ -28,7 +33,14 @@ public class SocketChecker : MonoBehaviour
             if (allSocketsFilled && particleSystem.isPlaying)
             {
                 particleSystem.Stop(); // Mematikan Particle System
-                Debug.Log("Semua socket sudah terisi. Particle System dimatikan.");
+                Perintah9.SetActive(false);
+                WarningHeatPanel.SetActive(false);
+                Perintah10.SetActive(true);
+                DoneHeatPanel.SetActive(true);
+
+                yield return new WaitForSeconds(1f);
+                DoneHeatPanel.SetActive(false); 
+
                 yield break; // Keluar dari coroutine karena sudah selesai
             }
         }
