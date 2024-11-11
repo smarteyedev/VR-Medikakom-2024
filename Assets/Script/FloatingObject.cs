@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.UI; // Untuk menggunakan UI panel
+using UnityEngine.UI; // Pastikan untuk mengimpor namespace UI
 using System.Collections;
 
 public class FloatingRobot : MonoBehaviour
@@ -21,9 +21,8 @@ public class FloatingRobot : MonoBehaviour
     public GameObject object2; // Objek kedua
     public GameObject object3; // Objek ketiga
 
-    // Referensi ke AudioSource untuk SFX
-    public AudioSource audioSource;
-    public AudioClip panelChangeSFX; // SFX untuk pergantian panel
+    // Button untuk memulai urutan script
+    public Button startButton; // Button untuk memulai urutan
 
     void Start()
     {
@@ -33,8 +32,11 @@ public class FloatingRobot : MonoBehaviour
         // Mulai animasi floating menggunakan LeanTween
         StartFloating();
 
-        // Tampilkan panel pertama
-        ShowPanel(panel1);
+        // Tambahkan listener ke button
+        if (startButton != null)
+        {
+            startButton.onClick.AddListener(OnStartButtonClicked);
+        }
     }
 
     void StartFloating()
@@ -45,11 +47,28 @@ public class FloatingRobot : MonoBehaviour
             .setLoopPingPong();   // Looping bolak-balik (naik dan turun)
     }
 
+    void OnStartButtonClicked()
+    {
+        StartCoroutine(StartScriptSequence()); // Jalankan urutan script
+    }
+
+    IEnumerator StartScriptSequence()
+    {
+        // Tampilkan panel pertama setelah 2 detik
+        yield return ShowPanelAfterDelay(panel1, 2f);
+    }
+
+    IEnumerator ShowPanelAfterDelay(GameObject panel, float delay)
+    {
+        yield return new WaitForSeconds(delay); // Tunggu selama delay
+        ShowPanel(panel); // Tampilkan panel setelah delay
+    }
+
     void ShowPanel(GameObject panel)
     {
         panel.SetActive(true); // Tampilkan panel
-        PlayPanelChangeSFX(); // Mainkan SFX saat panel ditampilkan
-        
+        AnimatePanelScale(panel, Vector3.zero, Vector3.one, 0.5f); // Animasi scale up
+
         // Memunculkan objek saat panel3 ditampilkan
         if (panel == panel3)
         {
@@ -66,8 +85,12 @@ public class FloatingRobot : MonoBehaviour
     IEnumerator HidePanelAfterDelay(GameObject panel, float delay)
     {
         yield return new WaitForSeconds(delay); // Tunggu selama delay
+        AnimatePanelScale(panel, Vector3.one, Vector3.zero, 0.5f); // Animasi scale down
+
+        // Sembunyikan panel setelah animasi selesai
+        yield return new WaitForSeconds(0.5f); // Tunggu selama animasi scale down
         panel.SetActive(false); // Sembunyikan panel
-        
+
         // Tampilkan panel berikutnya
         if (panel == panel1)
         {
@@ -92,11 +115,9 @@ public class FloatingRobot : MonoBehaviour
         object3.SetActive(true); // Tampilkan objek ketiga
     }
 
-    void PlayPanelChangeSFX()
+    void AnimatePanelScale(GameObject panel, Vector3 fromScale, Vector3 toScale, float duration)
     {
-        if (audioSource != null && panelChangeSFX != null)
-        {
-            audioSource.PlayOneShot(panelChangeSFX); // Mainkan efek suara
-        }
+        panel.transform.localScale = fromScale; // Set scale awal
+        LeanTween.scale(panel, toScale, duration).setEase(LeanTweenType.easeInOutBack); // Animasi scale
     }
 }

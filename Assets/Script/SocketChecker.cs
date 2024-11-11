@@ -36,10 +36,7 @@ public class SocketChecker : MonoBehaviour
                 Perintah9.SetActive(false);
                 WarningHeatPanel.SetActive(false);
                 Perintah10.SetActive(true);
-                DoneHeatPanel.SetActive(true);
-
-                yield return new WaitForSeconds(1f);
-                DoneHeatPanel.SetActive(false); 
+                DoneHeatPanel.SetActive(true); 
 
                 yield break; // Keluar dari coroutine karena sudah selesai
             }

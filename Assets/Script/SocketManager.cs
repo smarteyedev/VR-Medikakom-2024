@@ -1,125 +1,154 @@
+using Seville;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
-using UnityEngine.UI;
 
 public class PCAssemblyManager : MonoBehaviour
 {
     [System.Serializable]
     public class AssemblyStep
     {
-        public string componentName; // Nama komponen (misalnya CPU, RAM)
-        public XRSocketInteractor socket; // Socket yang sesuai untuk komponen
-        public GameObject component; // Objek komponen yang akan dipasang
-        public GameObject infoPanel1; // Panel informasi pertama
-        public GameObject infoPanel2; // Panel informasi kedua
-        public GameObject spawner; // GameObject yang berfungsi sebagai spawner
+        public string componentName;
+        public SESocketInteractor socket;
+        public GameObject component;
+        public GameObject infoPanel1;
+        public GameObject infoPanel2;
+        public GameObject spawner;
+        [HideInInspector] public Rigidbody componentRb;
+        [HideInInspector] public XRGrabInteractable grabInteractable;
     }
 
-    public List<AssemblyStep> assemblySteps = new List<AssemblyStep>(); // List untuk menyimpan langkah-langkah perakitan
-    public GameObject notificationPanel; // Panel notifikasi yang muncul jika urutan salah
-    public float notificationDuration = 2f; // Durasi notifikasi
+    public List<AssemblyStep> assemblySteps = new List<AssemblyStep>();
+    public GameObject notificationPanel;
+    public float notificationDuration = 2f;
 
-    public GameObject successAudioObject; // GameObject yang berisi AudioSource untuk SFX sukses
-    public GameObject errorAudioObject; // GameObject yang berisi AudioSource untuk SFX error
+    public GameObject successAudioObject;
+    public GameObject errorAudioObject;
+    public float returnDelay = 2f;
 
-    private int currentStep = 0; // Langkah saat ini (step 1, step 2, dst.)
+    private int currentStep = 0;
+    private bool componentPlacedCorrectly = false;
 
     void Start()
     {
-        // Sembunyikan semua panel informasi di awal
         foreach (var step in assemblySteps)
         {
             step.infoPanel1.SetActive(false);
             step.infoPanel2.SetActive(false);
+
+            step.socket.selectEntered.AddListener((args) => OnComponentPlaced(args, step));
+            step.socket.selectExited.AddListener((args) => OnComponentRemoved(args, step));
+
+            step.componentRb = step.component.GetComponent<Rigidbody>();
+            if (step.componentRb == null)
+            {
+                step.componentRb = step.component.AddComponent<Rigidbody>();
+            }
+
+            step.grabInteractable = step.component.GetComponent<XRGrabInteractable>();
+            if (step.grabInteractable != null)
+            {
+                step.grabInteractable.selectExited.AddListener((args) => OnComponentReleased(args, step));
+            }
         }
 
-        // Sembunyikan panel notifikasi
         notificationPanel.SetActive(false);
-    }
 
-    void Update()
-    {
-        if (currentStep < assemblySteps.Count)
+        if (assemblySteps.Count > 0)
         {
-            // Cek apakah komponen di langkah saat ini sudah terpasang
-            if (assemblySteps[currentStep].socket.interactablesSelected.Count > 0 &&
-                assemblySteps[currentStep].socket.GetOldestInteractableSelected().transform == assemblySteps[currentStep].component.transform)
-            {
-                // Jika komponen sesuai dengan urutan, mainkan SFX success dan lanjutkan ke langkah berikutnya
-                PlaySFX(successAudioObject);
-                currentStep++;
-
-                // Pastikan langkah berikutnya tidak melebihi jumlah assemblySteps
-                if (currentStep < assemblySteps.Count)
-                {
-                    // Tampilkan panel informasi untuk langkah selanjutnya
-                    ShowInfoPanels(currentStep);
-                }
-            }
-
-            // Cek apakah komponen yang dipasang di luar urutan
-            for (int i = currentStep + 1; i < assemblySteps.Count; i++)
-            {
-                if (assemblySteps[i].socket.interactablesSelected.Count > 0 &&
-                    assemblySteps[i].socket.GetOldestInteractableSelected().transform == assemblySteps[i].component.transform)
-                {
-                    // Jika komponen dipasang di luar urutan, kembalikan ke spawner, mainkan SFX error
-                    PlaySFX(errorAudioObject);
-                    ReturnComponentToSpawner(i);
-                    StartCoroutine(ShowNotification());
-                }
-            }
+            ShowInfoPanels(currentStep);
         }
     }
 
-    void ReturnComponentToSpawner(int stepIndex)
+    private void OnComponentPlaced(SelectEnterEventArgs args, AssemblyStep step)
     {
-        // Kembalikan komponen ke posisi spawner
-        GameObject spawner = assemblySteps[stepIndex].spawner;
+        if (assemblySteps[currentStep] == step)
+        {
+            PlaySFX(successAudioObject);
+            componentPlacedCorrectly = true;
+            currentStep++;
 
-        // Pindahkan komponen ke posisi dan rotasi spawner
-        assemblySteps[stepIndex].component.transform.position = spawner.transform.position;
-        assemblySteps[stepIndex].component.transform.rotation = spawner.transform.rotation; // Mengatur rotasi ke rotasi spawner
+            if (currentStep < assemblySteps.Count)
+            {
+                ShowInfoPanels(currentStep);
+            }
+        }
+        else
+        {
+            PlaySFX(errorAudioObject);
+            componentPlacedCorrectly = false;
+            StartCoroutine(ReturnComponentToSpawner(step, returnDelay));
+            StartCoroutine(ShowNotification());
+        }
+    }
 
-        // Dapatkan interaksi yang sedang terjadi
-        var selectedInteractable = assemblySteps[stepIndex].socket.GetOldestInteractableSelected();
+    private void OnComponentRemoved(SelectExitEventArgs args, AssemblyStep step)
+    {
+        if (currentStep > 0 && assemblySteps[currentStep - 1] == step)
+        {
+            componentPlacedCorrectly = false;
+            currentStep--;
+            ShowInfoPanels(currentStep);
+        }
+    }
+
+    private void OnComponentReleased(SelectExitEventArgs args, AssemblyStep step)
+    {
+        // Jika objek dilepaskan dari grab, mulai coroutine untuk mengembalikan objek setelah 2 detik jika tidak masuk socket
+        StartCoroutine(CheckReturnToSpawner(step));
+    }
+
+    private IEnumerator CheckReturnToSpawner(AssemblyStep step)
+    {
+        yield return new WaitForSeconds(returnDelay);
+
+        // Pastikan objek tidak di-grab dan tidak berada di dalam socket sebelum mengembalikannya ke spawner
+        if (step.grabInteractable.isSelected == false && !step.socket.hasSelection)
+        {
+            StartCoroutine(ReturnComponentToSpawner(step, 0f));
+        }
+    }
+
+    IEnumerator ReturnComponentToSpawner(AssemblyStep step, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        var selectedInteractable = step.socket.GetOldestInteractableSelected();
 
         if (selectedInteractable != null)
         {
-            // Gunakan interactionManager untuk memaksa interaksi keluar
-            assemblySteps[stepIndex].socket.interactionManager.SelectExit(assemblySteps[stepIndex].socket, selectedInteractable);
+            step.socket.interactionManager.SelectExit(step.socket, selectedInteractable);
         }
+
+        yield return new WaitForSeconds(0.05f);
+
+        GameObject spawner = step.spawner;
+        step.component.transform.position = spawner.transform.position;
+        step.component.transform.rotation = spawner.transform.rotation;
+        step.componentRb.velocity = Vector3.zero;
+        step.componentRb.angularVelocity = Vector3.zero;
     }
 
     IEnumerator ShowNotification()
     {
-        // Tampilkan panel notifikasi
         notificationPanel.SetActive(true);
-
-        // Tunggu selama 2 detik
         yield return new WaitForSeconds(notificationDuration);
-
-        // Sembunyikan panel notifikasi
         notificationPanel.SetActive(false);
     }
 
     void ShowInfoPanels(int stepIndex)
     {
-        // Jika ada langkah sebelumnya, sembunyikan panel informasinya
         if (stepIndex > 0)
         {
             assemblySteps[stepIndex - 1].infoPanel1.SetActive(false);
             assemblySteps[stepIndex - 1].infoPanel2.SetActive(false);
         }
 
-        // Tampilkan panel informasi untuk langkah yang sesuai
         assemblySteps[stepIndex].infoPanel1.SetActive(true);
         assemblySteps[stepIndex].infoPanel2.SetActive(true);
     }
 
-    // Fungsi untuk memutar SFX dari GameObject yang memiliki AudioSource
     void PlaySFX(GameObject audioObject)
     {
         if (audioObject != null)

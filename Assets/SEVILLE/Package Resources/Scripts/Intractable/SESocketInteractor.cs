@@ -14,6 +14,16 @@ namespace Seville
         public List<string> targetObjNames = new List<string>();
         private MeshRenderer mesh;
 
+        //[Header("Custom")]
+        //public GameObject visualObjectMarker;
+
+        //public void VisualObjectSetActive()
+        //{
+        //    Invoke("ObjectMarker", 0.1f);
+        //}
+
+        //private void ObjectMarker() => visualObjectMarker.SetActive(false);
+
         protected override void Awake()
         {
             base.Awake();
